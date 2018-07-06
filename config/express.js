@@ -6,12 +6,13 @@ const cookiesParser = require('cookie-parser');
 const express       = require('express');
 const config        = require('./index');
 // Middleware
-const { notFound, unAuthorized, passportAuthen } = require('./middleware');
+const { notFound, unAuthorized, passportAuthen, responseModified } = require('./middleware');
 // Api Router
 const apiRouter                                  = require('./routes');
 
 
 module.exports = (app, passport) => {
+    app.use(responseModified);
     passport.use(passportAuthen);
     app.use(cors()); // cross-origin for all route
     app.use(express.static(config.ROOT + '/assets'));
@@ -25,11 +26,11 @@ module.exports = (app, passport) => {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json())
     app.use(passport.initialize());
-    
+
     app.get('/', (req, res) => {
-        res.status(200).json({
+        res.success({
             message: 'Welcome Nodejs With Mongoose'
-        })
+        });
     })
     
     app.use('/api', apiRouter);
