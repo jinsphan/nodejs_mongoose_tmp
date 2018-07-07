@@ -1,6 +1,30 @@
-const mongoose           = require("mongoose");
-const { _generateToken } = require("../../utils/func.utils")
-const User               = mongoose.model(require("./users.Seed").modelName);
+const mongoose = require("mongoose");
+const { _generateToken, modifyUser } = require("../../utils/func.utils")
+const User = mongoose.model(require("./users.Seed").modelName);
+
+console.log(require("co"))
+
+const { wrap: async } = require("co");
+
+/**
+ * Load user data when route have _id param
+ */
+
+const load = async(function* (req, res, next, _id) {
+    try {
+        const options = {
+            criteria: {
+                _id,
+            }
+        }
+
+        req.profile = yield User.load(options);
+        if (!req.profile) return next(new Error("User not found"));
+    } catch (er) {
+        return next(er);
+    }
+    next();
+})
 
 /**
  * Get all users in database
@@ -20,8 +44,8 @@ const getAll = (req, res) => {
  * Get user by user _id
  */
 
-const getById = (req, res) => {
-
+const getOneById = (req, res) => {
+    res.success(modifyUser(req.profile.toJSON()));
 }
 
 /**
@@ -29,17 +53,17 @@ const getById = (req, res) => {
  */
 
 const afterLogin = (req, res) => {
-    const user = {
-        ...req.user,
-        avatar: `${req.get('host')}/images/avatars/${req.user.avatar}`
+    const data = {
+        token:  _generateToken(modifyUser(req.user))
     }
-    res.json({
-        token: _generateToken(user),
-    })
+    
+    res.success(data);
 }
 
 
 module.exports = {
     getAll,
-    afterLogin
+    afterLogin,
+    getOneById,
+    load
 }

@@ -1,5 +1,5 @@
 var jwt = require("jsonwebtoken");
-var { KEY_JWT_SECRET } = require("../../config");
+var { KEY_JWT_SECRET, HOST } = require("../../config");
 
 const _generateToken = (user) => {
   var expiry = new Date();
@@ -13,6 +13,15 @@ const _generateToken = (user) => {
   }, KEY_JWT_SECRET);
 }
 
+
+const modifyUser = function (user){
+  return  {
+    ...user,
+    avatar: `${HOST}/images/avatars/${user.avatar}`
+  }
+}
+
 module.exports = {
     _generateToken,
+    modifyUser
 }

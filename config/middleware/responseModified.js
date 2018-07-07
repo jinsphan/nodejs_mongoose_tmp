@@ -5,7 +5,7 @@
 module.exports = (req, res, next) => {
     res.success = (data, message = "Successful!") => {
         res.status(200).json({
-            data: data,
+            data: data || null,
             message: message,
             success: 1 
         })

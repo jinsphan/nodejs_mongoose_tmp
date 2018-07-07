@@ -35,5 +35,10 @@ module.exports = (app, passport) => {
     
     app.use('/api', apiRouter);
     app.use(notFound);
+    
+    app.use((err, req, res, next) => {
+        res.error(err.message);
+    })
+
     app.use(unAuthorized);
 };

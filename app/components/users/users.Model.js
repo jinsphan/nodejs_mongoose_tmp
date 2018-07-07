@@ -4,6 +4,7 @@ const Schema   = mongoose.Schema;
 const {
     SALT_ROUND
 } = require('../../../config');
+const { wrap: async } = require("co");
 
 const UserSchema = new Schema({
     username: { type: String, default: '' },
@@ -15,37 +16,31 @@ const UserSchema = new Schema({
 
 UserSchema
     .virtual('password')
-    .set(function(password) {
-        this.encryptPassword(password)
-            .then(hash => this.hashed_password = hash)
-            .catch(console.log);
-    })
+    .set(async(function* (password) {
+        this.hashed_password = yield this.encryptPassword(password);
+    }))
 
 /**
  * Methods
  */
 
 UserSchema.methods = {
-    encryptPassword: function (password) {
-        return bcrypt.hash(password, SALT_ROUND);
-    },
+    encryptPassword: async(function* (password) {
+        const hashed_password =  yield bcrypt.hash(password, SALT_ROUND);
+        return hashed_password;
+    }),
 
     /**
      * Authenticate - check if the passwords are the same
      * @param {String} plainText
-     * @return {Promise}
+     * @return {Boolean}
      * @api private
      */
 
-    authenticate: function(plainText) {
-        return new Promise((resolve, reject) => {
-            bcrypt.compare(plainText, this.hashed_password, (err, res) => {
-                if (err) reject({ message: 'Has error when compare password' })
-                else if (!res) reject({ message: 'Invalid password' });
-                else resolve();
-            });
-        })
-    }
+    authenticate: async(function* (plainText) {
+        const isCorrectPassword =  yield bcrypt.compare(plainText, this.hashed_password);
+        return isCorrectPassword;
+    })
 }
 
 /**
@@ -61,7 +56,7 @@ UserSchema.statics = {
      */
 
     load: function(options, cb) {
-        options.select = options.select || "username fullname";
+        options.select = options.select || "username fullname avatar role _id";
         return this.findOne(options.criteria)
             .select(options.select)
             .exec(cb)

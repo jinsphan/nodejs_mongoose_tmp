@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const LocalStrategy = require("passport-local").Strategy;
 // const userServices  = require("../components/users/users.Services");
 const User = mongoose.model('User');
+const { wrap: async } = require("co");
 
 module.exports = new LocalStrategy({
   usernameField: 'username',
@@ -16,20 +17,21 @@ module.exports = new LocalStrategy({
       select: "username hashed_password fullname avatar role",
     }
 
-    return User.load(options, (err, user) => {
+    return User.load(options, async(function* (err, user) {
       if (err) {
         return done(err);
       }
       if (!user) {
         return done(null, false, { message: 'Unknown user' });
       }
-      return user.authenticate(password)
-        .then(() => {
-          return done(null, user.toJSON());
-        })
-        .catch(err => {
-          done(null, false, err);
-        })
-    })
+
+      const isAuth = yield user.authenticate(password);
+
+      if (!isAuth) {
+        return done(null, false, { message: "Invalid password" });
+      }
+
+      return done(null, user.toJSON());
+    }))
   }
 );
