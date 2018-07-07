@@ -17,7 +17,7 @@ module.exports = new LocalStrategy({
       select: "username hashed_password fullname avatar role",
     }
 
-    return User.load(options, async(function* (err, user) {
+    return User.load(options, async(err, user) => {
       if (err) {
         return done(err);
       }
@@ -25,13 +25,13 @@ module.exports = new LocalStrategy({
         return done(null, false, { message: 'Unknown user' });
       }
 
-      const isAuth = yield user.authenticate(password);
+      const isAuth = await user.authenticate(password);
 
       if (!isAuth) {
         return done(null, false, { message: "Invalid password" });
       }
 
       return done(null, user.toJSON());
-    }))
+    })
   }
 );

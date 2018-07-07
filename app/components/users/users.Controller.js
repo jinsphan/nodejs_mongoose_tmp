@@ -46,6 +46,14 @@ const getOneById = (req, res) => {
 }
 
 /**
+ * Create new 
+ */
+const addOne = (req, res) => {
+    console.log(req.body);
+    res.success("OK");
+}
+
+/**
  * After login success, it will response to client a token
  */
 
@@ -61,5 +69,6 @@ module.exports = {
     getAll,
     afterLogin,
     getOneById,
+    addOne,
     load
 }

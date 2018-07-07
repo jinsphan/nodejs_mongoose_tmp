@@ -37,10 +37,10 @@ UserSchema.methods = {
      * @api private
      */
 
-    authenticate: async(function* (plainText) {
-        const isCorrectPassword =  yield bcrypt.compare(plainText, this.hashed_password);
+    authenticate: async function (plainText) {
+        const isCorrectPassword =  await bcrypt.compare(plainText, this.hashed_password);
         return isCorrectPassword;
-    })
+    }
 }
 
 /**
