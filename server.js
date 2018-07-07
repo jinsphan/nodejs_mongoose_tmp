@@ -47,4 +47,7 @@ const connect = () => {
 
 connect()
     .then(listen)
-    .catch(console.log)
+    .catch((er) => {
+        console.log(er);
+        process.exit(1);
+    })

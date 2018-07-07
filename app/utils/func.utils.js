@@ -21,7 +21,20 @@ const modifyUser = function (user){
   }
 }
 
+const curry = function (fn) {
+  return (...pr) => {
+      if (fn.length === 1) {
+          fn(...pr);
+      }
+      else {
+          
+          return curry(fn.bind(null, ...pr));
+      }
+  }
+}
+
 module.exports = {
     _generateToken,
-    modifyUser
+    modifyUser,
+    curry
 }

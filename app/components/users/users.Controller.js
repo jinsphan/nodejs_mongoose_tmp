@@ -2,29 +2,26 @@ const mongoose = require("mongoose");
 const { _generateToken, modifyUser } = require("../../utils/func.utils")
 const User = mongoose.model(require("./users.Seed").modelName);
 
-console.log(require("co"))
-
 const { wrap: async } = require("co");
 
 /**
  * Load user data when route have _id param
  */
 
-const load = async(function* (req, res, next, _id) {
+const load = async (req, res, next, _id) => {
     try {
         const options = {
             criteria: {
                 _id,
             }
         }
-
-        req.profile = yield User.load(options);
+        req.profile = await User.load(options);
         if (!req.profile) return next(new Error("User not found"));
     } catch (er) {
         return next(er);
     }
     next();
-})
+}
 
 /**
  * Get all users in database
@@ -56,7 +53,6 @@ const afterLogin = (req, res) => {
     const data = {
         token:  _generateToken(modifyUser(req.user))
     }
-    
     res.success(data);
 }
 

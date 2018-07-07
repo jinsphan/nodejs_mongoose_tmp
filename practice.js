@@ -1,13 +1,42 @@
-const { wrap: async } = require("co");
+const { wrap: async } = require('co');
 
-const a = async(function * () {
-    const num = yield new Promise((resolve, reject) => {
-        setTimeout(() => {
-            reject("ABCDEF");
-        }, 1500);
-    }) 
+// const foo = async(function* () {
+//     const a = () => {
+//         return new Promise((resolve, reject) => {
+//             setTimeout(() => {
+//                 reject("ABCDEF");
+//             }, 1000);
+//         })
+//     }
+//     let res;
+//     try {
+//         res = yield a();
+//     } catch (er) {
+//         console.log(er);
+//     }
+//     console.log(res);
+// })
 
-    console.log(num);
-})
+const foo = async () => {
+    const a = () => {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve("ABCDEF");
+            }, 1000);
+        })
+    }
 
-a();
+    let ar = [];
+
+    ar.push(a());
+    ar.push(a());
+    ar.push(a());
+    ar.push(a());
+    ar.push(a());
+    ar.push(a());
+
+    const res = await Promise.all(ar);
+    console.log(res);
+}
+
+foo();
