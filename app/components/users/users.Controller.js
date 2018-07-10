@@ -1,8 +1,16 @@
+// Import libraries
 const mongoose = require("mongoose");
+const { wrap: async } = require("co");
+const multer   = require('multer');
+
+
+// Import from our source
 const { _generateToken, modifyUser } = require("../../utils/func.utils")
 const User = mongoose.model(require("./users.Seed").modelName);
 
-const { wrap: async } = require("co");
+// Varibable
+// const storage = multer.memoryStorage();
+// const upload = multer({storage: storage}).single('file');
 
 /**
  * Load user data when route have _id param
@@ -46,11 +54,14 @@ const getOneById = (req, res) => {
 }
 
 /**
- * Create new 
+ * Create new user
  */
 const addOne = (req, res) => {
-    console.log(req.body);
     res.success("OK");
+}
+const validateForm = (data, file) => {
+    
+    console.log(username, password, fullname);
 }
 
 /**
@@ -70,5 +81,6 @@ module.exports = {
     afterLogin,
     getOneById,
     addOne,
-    load
+    load,
+    validateForm
 }

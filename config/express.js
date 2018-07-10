@@ -23,8 +23,8 @@ module.exports = (app, passport) => {
     }
     
     app.use(cookiesParser());
-    app.use(bodyParser.urlencoded({ extended: false }));
-    app.use(bodyParser.json())
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
     app.use(passport.initialize());
 
     app.get('/', (req, res) => {
