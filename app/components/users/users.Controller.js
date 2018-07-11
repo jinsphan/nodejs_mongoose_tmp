@@ -6,6 +6,8 @@ const multer   = require('multer');
 
 // Import from our source
 const { _generateToken, modifyUser } = require("../../utils/func.utils")
+const { _vldUserRegister }           = require("../../utils/validation");
+
 const User = mongoose.model(require("./users.Seed").modelName);
 
 // Varibable
@@ -56,13 +58,53 @@ const getOneById = (req, res) => {
 /**
  * Create new user
  */
-const addOne = (req, res) => {
-    res.success("OK");
+const addOne = async (req, res) => {
+    const user = new User({
+        username: req.body.username,
+        role: req.body.role || '2',
+        fullname: req.body.fullname,
+        avatar: req.file.filename
+    });
+
+    try {
+        user.hashed_password = await User.encryptPassword(req.body.password);
+        await user.save();
+        res.success(user.toJSON());
+    } catch(er) {
+        res.error(er);
+    }
 }
-const validateForm = (data, file) => {
+/**
+ *  We have 3 validations: normal form, type file and check the same username 
+ */
+const validateUser = (data, file) => new Promise(async (resolve, reject) => {
+    const {
+        isValid,
+        errors
+    } = _vldUserRegister(data);
     
-    console.log(username, password, fullname);
-}
+    // Validate normal form
+    if (!isValid) return reject(errors);
+    
+    // Validate file type of avatar 
+    if (!~file.mimetype.indexOf('image')) {
+        return reject("File avatar must be an image");
+    }
+
+    // Validate the same account
+    const user = await User.findOne({
+        username: data.username
+    }).exec();
+
+    if (user) {
+        return reject({
+            username: "Username is available"
+        })
+    }
+    
+    resolve();
+});
+
 
 /**
  * After login success, it will response to client a token
@@ -82,5 +124,5 @@ module.exports = {
     getOneById,
     addOne,
     load,
-    validateForm
+    validateUser
 }

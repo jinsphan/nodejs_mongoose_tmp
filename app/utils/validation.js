@@ -37,7 +37,6 @@ const regexOptions = {
     }
 }
 
-
 function _execRegex(regex, data, getMessage) {
     const _regex = new RegExp(regex, 'g');
     return getMessage(_regex.exec(data));
@@ -79,10 +78,10 @@ function validate(data, rule) {
 module.exports = {
     _vldUserRegister: (data) => {
         const rule = {
-            username: "required|string|min=6|max=150",
-            password: "required|string|min=6|max=150",
+            username: "required|string|min=3|max=150",
+            password: "required|string|min=3|max=150",
             fullname: "free_string|min=3|max=150",
-            role: "required|number|enum=1,2,3",
+            role: "number|enum=1,2",
             phone: "number|min=10|max=11",
         }
         return validate(data, rule);

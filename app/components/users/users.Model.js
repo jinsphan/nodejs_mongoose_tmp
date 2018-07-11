@@ -16,20 +16,15 @@ const UserSchema = new Schema({
 
 UserSchema
     .virtual('password')
-    .set(async(function* (password) {
-        this.hashed_password = yield this.encryptPassword(password);
-    }))
+    .get(function () {
+        return this.hashed_password;
+    })
 
 /**
  * Methods
  */
 
 UserSchema.methods = {
-    encryptPassword: async(function* (password) {
-        const hashed_password =  yield bcrypt.hash(password, SALT_ROUND);
-        return hashed_password;
-    }),
-
     /**
      * Authenticate - check if the passwords are the same
      * @param {String} plainText
@@ -60,7 +55,17 @@ UserSchema.statics = {
         return this.findOne(options.criteria)
             .select(options.select)
             .exec(cb)
-    }
+    },
+    /**
+     * Encrypt password
+     * @param { plainText } password
+     * @api private
+     */
+    
+    encryptPassword: async function (password) {
+        const hashed_password =  await bcrypt.hash(password, SALT_ROUND);
+        return hashed_password;
+    },
 }
 
 mongoose.model('User', UserSchema);
