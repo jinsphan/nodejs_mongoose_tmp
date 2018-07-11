@@ -132,11 +132,25 @@ const editOneById = async (req, res) => {
         await req.profile.save(); 
         res.success(req.profile.toJSON());
 
-    } catch (er) {
-        res.error(er.message);
+    } catch (err) {
+        res.error(err.message);
     }
 }
 
+/**
+ * Delete user by _id
+ */
+const delOneById = async (req, res) => {
+    try {
+        if (req.profile._id.equals(req.userAuth._id)) {
+            throw new Error("You should not delete by yourself");
+        }
+        await User.remove(req.profile).exec();
+        res.success(null, "Delete successfuly!");
+    } catch (err) {
+        res.error(err.message);
+    }
+}
 
 /**
  * After login success, it will response to client a token
@@ -156,6 +170,7 @@ module.exports = {
     getOneById,
     addOne,
     editOneById,
+    delOneById,
     load,
     validateUser
 }

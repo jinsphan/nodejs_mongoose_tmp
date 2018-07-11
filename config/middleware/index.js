@@ -1,9 +1,10 @@
-var notFound = require("./notFound");
-var unAuthorized = require("./unAuthorized");
-var authExpressJwt = require("./authExpressJwt");
-var checkTokenExpiry = require("./checkTokenExpiry");
-var passportAuthen = require("./passportAuthen");
-var responseModified = require("./responseModified");
+var notFound                  = require("./notFound");
+var unAuthorized              = require("./unAuthorized");
+var authExpressJwt            = require("./authExpressJwt");
+var checkTokenExpiry          = require("./checkTokenExpiry");
+var passportAuthen            = require("./passportAuthen");
+var responseModified          = require("./responseModified");
+var { adminAuth, ownersAuth } = require("./authorization");
 
 module.exports = {
   notFound,
@@ -11,5 +12,7 @@ module.exports = {
   authExpressJwt,
   checkTokenExpiry,
   passportAuthen,
-  responseModified
+  responseModified,
+  adminAuth,
+  ownersAuth
 }

@@ -3,9 +3,14 @@ const router   = require('express').Router();
 const passport = require('passport');
 const multer   = require('multer');
 
-const config                               = require('../index');
-const { authExpressJwt, checkTokenExpiry } = require('../middleware');
-const userCtrl                             = require(path.join(config.ROOT, 'app/components/users/users.Controller'));
+const config   = require('../index');
+const {
+    authExpressJwt,
+    checkTokenExpiry,
+    adminAuth,
+    ownersAuth,
+}              = require('../middleware');
+const userCtrl = require(path.join(config.ROOT, 'app/components/users/users.Controller'));
 
 const auth = [authExpressJwt, checkTokenExpiry];
 const passportLogin = passport.authenticate('local', {session: false});
@@ -37,12 +42,11 @@ const upload = multer({
 // router.get('/check-token-expire', ...auth, userCtrl.refreshToken)
 router.post('/login', passportLogin, userCtrl.afterLogin);
 router.post('/', upload.single('avatar') ,userCtrl.addOne);
-router.get('/', ...auth, userCtrl.getAll);
-router.get('/:_id', ...auth, userCtrl.getOneById);
-router.put('/:_id', ...auth, userCtrl.editOneById)
+router.get('/', ...auth, adminAuth, userCtrl.getAll);
+router.get('/:_id', ...auth, adminAuth, userCtrl.getOneById);
+router.put('/:_id', ...auth, ownersAuth, userCtrl.editOneById);
+router.delete('/:_id', ...auth, adminAuth, userCtrl.delOneById);
 
 router.param('_id', userCtrl.load);
-// router.delete('/:id', ...auth, userCtrl.delOneById);
-
 
 module.exports = router;
