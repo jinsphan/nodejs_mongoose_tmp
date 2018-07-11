@@ -82,8 +82,17 @@ module.exports = {
             password: "required|string|min=3|max=150",
             fullname: "free_string|min=3|max=150",
             role: "number|enum=1,2",
-            phone: "number|min=10|max=11",
         }
         return validate(data, rule);
     },
+
+    _vldUserEdit: (data) => {
+        const rule = {
+            username: 'required|string|min=3|max=150',
+            password: 'string|min=3|max=150',
+            fullname: "required|free_string|min=3|max=150",
+            role: "required|number|enum=1,2",
+        }
+        return validate(data, rule);
+    }
 }

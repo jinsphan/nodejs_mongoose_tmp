@@ -1,18 +1,16 @@
 // Import libraries
 const mongoose = require("mongoose");
 const { wrap: async } = require("co");
-const multer   = require('multer');
-
+const only = require("only");
 
 // Import from our source
-const { _generateToken, modifyUser } = require("../../utils/func.utils")
-const { _vldUserRegister }           = require("../../utils/validation");
+const { _generateToken, modifyUser }     = require("../../utils/func.utils")
+const { _vldUserRegister, _vldUserEdit } = require("../../utils/validation");
 
 const User = mongoose.model(require("./users.Seed").modelName);
 
 // Varibable
-// const storage = multer.memoryStorage();
-// const upload = multer({storage: storage}).single('file');
+
 
 /**
  * Load user data when route have _id param
@@ -59,6 +57,8 @@ const getOneById = (req, res) => {
  * Create new user
  */
 const addOne = async (req, res) => {
+    if (!req.file) return res.error("Please post correctly form data!");
+
     const user = new User({
         username: req.body.username,
         role: req.body.role || '2',
@@ -78,12 +78,11 @@ const addOne = async (req, res) => {
  *  We have 3 validations: normal form, type file and check the same username 
  */
 const validateUser = (data, file) => new Promise(async (resolve, reject) => {
+    // Validate normal form
     const {
         isValid,
         errors
     } = _vldUserRegister(data);
-    
-    // Validate normal form
     if (!isValid) return reject(errors);
     
     // Validate file type of avatar 
@@ -92,18 +91,51 @@ const validateUser = (data, file) => new Promise(async (resolve, reject) => {
     }
 
     // Validate the same account
-    const user = await User.findOne({
-        username: data.username
-    }).exec();
-
-    if (user) {
-        return reject({
-            username: "Username is available"
-        })
+    const isAvailableUser = await User.isAvailableUser(data.username);
+    if (!isAvailableUser) {
+        return reject({ username: "Username is available" })
     }
-    
+
     resolve();
 });
+
+/**
+ * Edit user by their _id
+ * body required { username, fullname, role }
+ * body option { password }
+ * 
+ */
+const editOneById = async (req, res) => {
+    try {
+        // Check normal form
+        const {
+            isValid,
+            errors
+        } = _vldUserEdit({ ...req.body });
+        if (!isValid) return res.error(errors);
+
+        // Check the same username with other account
+        const isAvailableUser = await User.isAvailableUser(req.body.username);
+        if (!isAvailableUser && req.body.username !== req.profile.username) {
+            throw new Error("Username is available");
+        }
+
+        // Password is changed if the body contain password
+        if (req.body.password) {
+            req.profile.hashed_password = await User.encryptPassword(req.body.password);
+        }
+        
+        // Assign new data for user
+        Object.assign(req.profile, only(req.body, 'username fullname role'));
+
+        // Save
+        await req.profile.save(); 
+        res.success(req.profile.toJSON());
+
+    } catch (er) {
+        res.error(er.message);
+    }
+}
 
 
 /**
@@ -123,6 +155,7 @@ module.exports = {
     afterLogin,
     getOneById,
     addOne,
+    editOneById,
     load,
     validateUser
 }

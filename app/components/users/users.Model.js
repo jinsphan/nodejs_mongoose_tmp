@@ -36,6 +36,7 @@ UserSchema.methods = {
         const isCorrectPassword =  await bcrypt.compare(plainText, this.hashed_password);
         return isCorrectPassword;
     }
+    
 }
 
 /**
@@ -56,16 +57,28 @@ UserSchema.statics = {
             .select(options.select)
             .exec(cb)
     },
+    
     /**
      * Encrypt password
      * @param { plainText } password
      * @api private
      */
-    
     encryptPassword: async function (password) {
         const hashed_password =  await bcrypt.hash(password, SALT_ROUND);
         return hashed_password;
     },
+
+    /**
+     * Check is available user by username
+     * @param { String } username
+     * @returns { Boolean }
+     * 
+     */
+    isAvailableUser: async function (username) {
+        const user = await this.findOne({ username }).exec();
+        return user === null;
+    }
+    
 }
 
 mongoose.model('User', UserSchema);

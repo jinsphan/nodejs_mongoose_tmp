@@ -39,6 +39,7 @@ router.post('/login', passportLogin, userCtrl.afterLogin);
 router.post('/', upload.single('avatar') ,userCtrl.addOne);
 router.get('/', ...auth, userCtrl.getAll);
 router.get('/:_id', ...auth, userCtrl.getOneById);
+router.put('/:_id', ...auth, userCtrl.editOneById)
 
 router.param('_id', userCtrl.load);
 // router.delete('/:id', ...auth, userCtrl.delOneById);

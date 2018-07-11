@@ -2,5 +2,5 @@ x- Login
 x- Get all users
 x- Get user by their _id
 x- Add new user
-- Update user by their _id
+...- Update user by their _id
 - Delete user by their _id
