@@ -36,7 +36,6 @@ UserSchema.methods = {
         const isCorrectPassword =  await bcrypt.compare(plainText, this.hashed_password);
         return isCorrectPassword;
     }
-    
 }
 
 /**

@@ -31,6 +31,7 @@ models
 require('./config/express')(app, passport);
 
 const listen = () => {
+    // When testing API, should turn off server listening
     if (app.get('env') === 'test') return;
     app.listen(port);
     console.log(`App is listening on port: ${port}`);
@@ -51,3 +52,5 @@ connect()
         console.log(er);
         process.exit(1);
     })
+
+module.exports = app;

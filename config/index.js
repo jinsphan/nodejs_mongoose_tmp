@@ -1,5 +1,6 @@
-const path    = require('path');
-const __DEV__ = require('./env/development');
+const path     = require('path');
+const __DEV__  = require('./env/development');
+const __TEST__ = require('./env/test');
 
 // Config for json web token
 const jwtConfig = {
@@ -22,6 +23,10 @@ const config = {
     development: {
         ...defaults,
         ...__DEV__
+    },
+    test: {
+        ...defaults,
+        ...__TEST__
     }
 }
 

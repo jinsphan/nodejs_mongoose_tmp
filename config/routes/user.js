@@ -39,6 +39,11 @@ const upload = multer({
     storage,
 });
 
+/**
+ * Now we dont have edit users by admin
+ * Only for user
+ */
+
 // router.get('/check-token-expire', ...auth, userCtrl.refreshToken)
 router.post('/login', passportLogin, userCtrl.afterLogin);
 router.post('/', upload.single('avatar') ,userCtrl.addOne);

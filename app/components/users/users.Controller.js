@@ -74,6 +74,7 @@ const addOne = async (req, res) => {
         res.error(er);
     }
 }
+
 /**
  *  We have 3 validations: normal form, type file and check the same username 
  */
@@ -124,7 +125,12 @@ const editOneById = async (req, res) => {
         if (req.body.password) {
             req.profile.hashed_password = await User.encryptPassword(req.body.password);
         }
-        
+
+        // Only admin can change role
+        if (req.body.role == 1 && req.userAuth.role != 1) {
+            throw new Error("Only admin can change role!");
+        }
+
         // Assign new data for user
         Object.assign(req.profile, only(req.body, 'username fullname role'));
 

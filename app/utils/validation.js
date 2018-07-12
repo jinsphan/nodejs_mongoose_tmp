@@ -37,11 +37,24 @@ const regexOptions = {
     }
 }
 
+/**
+ * Excute Regular Expression 
+ * @param {String} regex
+ * @param {Object} data
+ * @param {Callback} getMessage
+ * @returns {String} message
+ */
 function _execRegex(regex, data, getMessage) {
     const _regex = new RegExp(regex, 'g');
     return getMessage(_regex.exec(data));
 }
 
+/**
+ * Validation data with options rule
+ * @param {Object} data 
+ * @param {Object} rule
+ * @returns {Object} { isValid, errors } 
+ */
 function validate(data, rule) {
     let errors = {};
 

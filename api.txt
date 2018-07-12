@@ -3,4 +3,5 @@ x- Get all users
 x- Get user by their _id
 x- Add new user
 x- Update user by their _id
-...- Delete user by their _id
+x- Delete user by their _id
+...- Write unit test

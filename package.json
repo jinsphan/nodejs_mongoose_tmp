@@ -6,7 +6,7 @@
   "scripts": {
     "start": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
     "migrate": "NODE_ENV=development node migrate.js",
-    "test": "mocha --compilers js:babel-register"
+    "test": "NODE_ENV=test tape test/test-*.js"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +38,10 @@
     "babel-register": "^6.26.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.17.5",
-    "rimraf": "^2.6.2"
+    "rimraf": "^2.6.2",
+    "supertest": "^3.1.0",
+    "tap-spec": "^5.0.0",
+    "tap-spec-integrated": "^1.0.1",
+    "tape": "^4.9.1"
   }
 }
