@@ -1,8 +1,9 @@
-const test = require("tape");
+const test    = require("tape");
 const request = require('supertest');
+const app     = require("../server");
+const agent   = request.agent(app);
 require('tap-spec-integrated');
-const app = require("../server");
-const agent = request.agent(app);
+
 
 let token_user1 = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiZnVsbG5hbWUiOiJ1c2VyMSIsImF2YXRhciI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMS9pbWFnZXMvYXZhdGFycy9kZWFmdWx0X2F2YXRhci5wbmciLCJyb2xlIjoyLCJfaWQiOiI1YjQ0ODNiMTY0YTQ3YjdkNjExNzc3ZGMiLCJleHAiOjE1MzE0NTY5MzU5MDYsImlhdCI6MTUzMTM3MDUzNX0.lyYJuzV4LHbXlUjjtBTujI3jyNiGzjzsME2yowY6F2M"
 let token_admin = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZnVsbG5hbWUiOiJhZG1pbiIsImF2YXRhciI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMS9pbWFnZXMvYXZhdGFycy9hdmF0YXItMTUzMTI5MjA5MzIxNS5wbmciLCJyb2xlIjoxLCJfaWQiOiI1YjQ1YTliZDM0MDk5MzUxZjEyM2QwYjIiLCJleHAiOjE1MzE0NTY5OTMxMDYsImlhdCI6MTUzMTM3MDU5M30.SN-JRQSe3u4qgFe-mdQVKBTpdIbHBklH6i3avFHXEGg"

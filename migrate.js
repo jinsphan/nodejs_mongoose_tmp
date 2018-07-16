@@ -1,57 +1,74 @@
 'use strict';
 
 require('dotenv').config();
-const path = require('path');
+const path     = require('path');
 const mongoose = require('mongoose');
-const config = require('./config');
-const models = ['users'];
-
+const config   = require('./config');
+const models   = ['users'];
 
 models
-    .map(model => path.join(config.ROOT, `app/components/${model}/${model}.Model`))
+    .map(getPathModel)
     .forEach(require);
 
-const runMigrate = (type) => {
+function getPathModel(model) {
+    return path.join(config.ROOT, `app/components/${model}/${model}.Model`);
+}
+
+function getPathSeed(model) {
+    return path.join(config.ROOT, `app/components/${model}/${model}.Seed`);
+}
+
+function deleteAllDocs(xModel, cb) {
+    let countDone = 0;
+    xModel.remove({}, (er) => {
+        if (!er) {
+            console.log("Delete all data from " + xModel.modelName + " model");
+            countDone++;
+            if (models.length === countDone) {
+                setTimeout(() => {
+                    cb(null);
+                }, 1500);
+            }
+        } else {
+            cb("Can not delete data from " + xModel.modelName + " model");
+        }
+    })
+}
+
+function addDocuments(xModel, seed, cb) {
+    xModel.insertMany(seed, (err, docs) => {
+        if(err) return cb(err);
+        console.log("Added all documents for " + xModel.modelName + " model");
+        cb(null);
+    })
+}
+
+function runMigrate(type) {
     return new Promise((resolve, reject) => {
-        let countDone = 0;
         models
-        .map(model => path.join(config.ROOT, `app/components/${model}/${model}.Seed`))
+        .map(getPathSeed)
         .forEach((path) => {
-            const {
-                seed,
-                modelName
-            } = require(path);
+            const { seed, modelName } = require(path);
             const xModel = mongoose.model(modelName);
             switch(type) {
                 case 'roll-back': {
-                    xModel.remove({}, (er) => {
-                        if (!er) {
-                            console.log("Delete all data from " + modelName + " model");
-                            countDone++;
-                            if (models.length === countDone) {
-                                setTimeout(() => {
-                                    resolve();
-                                }, 1500);
-                            }
-                        } else {
-                            reject("Can not delete data from " + modelName + " model")
-                        }
-                    })
+                    deleteAllDocs(xModel, handleError);
                     break;
                 }
                 case 'add-documents': {
-                    xModel.insertMany(seed, (err, docs) => {
-                        if(err) return reject(err);
-                        console.log("Added all documents");
-                        resolve(docs);
-                    })
+                    addDocuments(xModel, seed, handleError);
                     break;
                 }
                 default: return false;
             }
-            
         })
-    }) 
+
+        function handleError(er) {
+            if (!er) return resolve();
+            reject(er);
+        }
+        
+    })
 }
     
 const connect = () => {
